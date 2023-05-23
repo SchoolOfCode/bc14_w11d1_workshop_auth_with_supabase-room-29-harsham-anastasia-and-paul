@@ -28,10 +28,28 @@ function App() {
     return () => subscription.unsubscribe();
   }, []);
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+  };
+
   if (!session) {
-    return <Auth supabaseClient={supabase} appearance={{ theme: ThemeSupa }} />;
+    return (
+      <div className="login-container">
+        <Auth
+          supabaseClient={supabase}
+          appearance={{ theme: ThemeSupa }}
+          onSignOut={() => setSession(null)}
+        />
+      </div>
+    );
   } else {
-    return <div>Logged in!</div>;
+    return (
+      <div>
+        <div>Logged in!</div>
+        <p>Welcome, {session.user.email}</p>
+        <button onClick={handleLogout}>Log Out</button>
+      </div>
+    );
   }
 }
 
