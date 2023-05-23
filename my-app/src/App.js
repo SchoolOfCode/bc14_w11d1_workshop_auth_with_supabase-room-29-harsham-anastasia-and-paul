@@ -19,12 +19,14 @@ function App() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      getMessages(session);
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      getMessages(session);
     });
 
     // getMessages();
@@ -35,7 +37,7 @@ function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  async function getMessages() {
+  async function getMessages(session) {
     let { data: messages, error } = await supabase
       .from("messages")
       .select("*")
