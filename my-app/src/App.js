@@ -12,6 +12,7 @@ const supabase = createClient(
 
 function App() {
   const [session, setSession] = useState(null);
+  const [messages, setMessages] = useState([]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -24,8 +25,18 @@ function App() {
       setSession(session);
     });
 
+    getMessages();
     return () => subscription.unsubscribe();
   }, []);
+
+  async function getMessages() {
+    let { data: messages, error } = await supabase.from("messages").select("*");
+    if (error) {
+      console.log("error", error);
+    }
+    console.log("messages", messages);
+    setMessages(messages);
+  }
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -47,6 +58,12 @@ function App() {
         <div>Logged in!</div>
         <p>Welcome, {session.user.email}</p>
         <button onClick={handleLogout}>Log Out</button>
+        {messages.map((message) => (
+          <div key={message.id}>
+            <h3>{message.created_at}</h3>
+            <p>{message.message}</p>
+          </div>
+        ))}
       </div>
     );
   }
