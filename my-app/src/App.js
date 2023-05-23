@@ -14,6 +14,8 @@ function App() {
   const [session, setSession] = useState(null);
   const [messages, setMessages] = useState([]);
 
+  // getMessages();
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -25,12 +27,19 @@ function App() {
       setSession(session);
     });
 
-    getMessages();
+    // getMessages();
+    console.log("WORKING");
+    // console.log(session.user.id);
+    // console.log(session);
+
     return () => subscription.unsubscribe();
   }, []);
 
   async function getMessages() {
-    let { data: messages, error } = await supabase.from("messages").select("*");
+    let { data: messages, error } = await supabase
+      .from("messages")
+      .select("*")
+      .eq("author_id", session.user.id);
     if (error) {
       console.log("error", error);
     }
@@ -53,6 +62,7 @@ function App() {
       </div>
     );
   } else {
+    // getMessages();
     return (
       <div>
         <div>Logged in!</div>
