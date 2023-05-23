@@ -1,4 +1,3 @@
-import logo from "./logo.svg";
 import "./App.css";
 import "./index.css";
 import { useState, useEffect } from "react";
@@ -38,7 +37,6 @@ function App() {
         <Auth
           supabaseClient={supabase}
           appearance={{ theme: ThemeSupa }}
-          providers={null}
           onSignOut={() => setSession(null)}
         />
       </div>
