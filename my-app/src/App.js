@@ -19,20 +19,19 @@ function App() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      getMessages(session);
+      if (session) {
+        getMessages(session);
+      }
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      getMessages(session);
+      if (session) {
+        getMessages(session);
+      }
     });
-
-    // getMessages();
-    console.log("WORKING");
-    // console.log(session.user.id);
-    // console.log(session);
 
     return () => subscription.unsubscribe();
   }, []);
@@ -41,7 +40,7 @@ function App() {
     let { data: messages, error } = await supabase
       .from("messages")
       .select("*")
-      .eq("author_id", session.user.id);
+      .eq("destination_id", session.user.id);
     if (error) {
       console.log("error", error);
     }
