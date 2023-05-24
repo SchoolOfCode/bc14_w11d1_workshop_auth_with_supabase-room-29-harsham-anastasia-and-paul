@@ -14,8 +14,6 @@ function App() {
   const [session, setSession] = useState(null);
   const [messages, setMessages] = useState([]);
 
-  // getMessages();
-
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -37,15 +35,25 @@ function App() {
   }, []);
 
   async function getMessages(session) {
-    let { data: messages, error } = await supabase
+    let { data: sentMessages, error: sentMessagesError } = await supabase
+      .from("messages")
+      .select("*")
+      .eq("author_id", session.user.id);
+
+    let { data: receivedMessages, error: receivedMessagesError } = await supabase
       .from("messages")
       .select("*")
       .eq("destination_id", session.user.id);
-    if (error) {
-      console.log("error", error);
+
+    if (sentMessagesError || receivedMessagesError) {
+      console.log("Error retrieving messages", sentMessagesError, receivedMessagesError);
     }
-    console.log("messages", messages);
-    setMessages(messages);
+
+    console.log("Sent messages", sentMessages);
+    console.log("Received messages", receivedMessages);
+
+    const allMessages = [...sentMessages, ...receivedMessages];
+    setMessages(allMessages);
   }
 
   const handleLogout = async () => {
@@ -63,7 +71,6 @@ function App() {
       </div>
     );
   } else {
-    // getMessages();
     return (
       <div>
         <div>Logged in!</div>
